@@ -1,4 +1,4 @@
-# Lightstreamer Round-Trip Demo Demo Adapter #
+# Lightstreamer Round-Trip Demo Adapter #
 
 This project shows the Round-Trip Demo Data and Metadata Adapters and how they can be plugged into Lightstreamer Server and used to feed the [Lightstreamer Round-Trip Demo Client](https://github.com/Weswit/Lightstreamer-example-RoundTrip-client-javascript) front-end. Please refer [here](http://www.lightstreamer.com/latest/Lightstreamer_Allegro-Presto-Vivace_5_1_Colosseo/Lightstreamer/DOCS-SDKs/General%20Concepts.pdf) for more details about Lightstreamer Adapters.
 The [Lightstreamer Round-Trip Demo Client](https://github.com/Weswit/Lightstreamer-example-RoundTrip-client-javascript) is a simple broadcast messages application based on Lightstreamer.
