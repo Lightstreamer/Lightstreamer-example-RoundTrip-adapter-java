@@ -117,9 +117,9 @@ Please test your Adapter with one of the clients in the [list](https://github.co
 
 ## Related projects ##
 
-* [Lightstreamer - Reusable Metadata Adapters in Java](https://github.com/Weswit/Lightstreamer-example-ReusableMetadata-adapter-java)
-* [Lightstreamer Chat Demo Adapter](https://github.com/Weswit/Lightstreamer-example-Chat-adapter-java)
-* [Lightstreamer Chat Demo Client for JavaScript](https://github.com/Weswit/Lightstreamer-example-chat-client-javascript)
+* [Lightstreamer - Reusable Metadata Adapters - Java SE Adapter](https://github.com/Weswit/Lightstreamer-example-ReusableMetadata-adapter-java)
+* [Lightstreamer - Basic Chat Demo - Java SE Adapter](https://github.com/Weswit/Lightstreamer-example-Chat-adapter-java)
+* [Lightstreamer - Basic Chat Demo - HTML Client](https://github.com/Weswit/Lightstreamer-example-Chat-client-javascript)
 
 # Lightstreamer Compatibility Notes #
 
