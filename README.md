@@ -46,8 +46,7 @@ You have to create a specific folder to deploy the Round-Trip Adapters otherwise
   <?xml version="1.0"?>
 
   <!-- Mandatory. Define an Adapter Set and sets its unique ID. -->
-  <adapters_conf id="DEMO">
-
+  <adapters_conf id="ROUNDTRIPDEMO">
 
     <!-- Mandatory. Define the Metadata Adapter. -->
     <metadata_provider>
