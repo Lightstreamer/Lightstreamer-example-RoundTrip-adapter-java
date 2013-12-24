@@ -1,5 +1,5 @@
 # Lightstreamer - Round-Trip Demo - Java Adapter #
-<!-- START DESCRIPTION Round-Trip Demo -->
+<!-- START DESCRIPTION lightstreamer-example-roundtrip-adapter-java -->
 
 This project shows the Round-Trip Demo Data and Metadata Adapters and how they can be plugged into Lightstreamer Server and used to feed the [Lightstreamer - Round-Trip Demo - HTML Client](https://github.com/Weswit/Lightstreamer-example-RoundTrip-client-javascript) front-end. Please refer [here](http://www.lightstreamer.com/latest/Lightstreamer_Allegro-Presto-Vivace_5_1_Colosseo/Lightstreamer/DOCS-SDKs/General%20Concepts.pdf) for more details about Lightstreamer Adapters.
 The [Lightstreamer - Round-Trip Demo - HTML Client](https://github.com/Weswit/Lightstreamer-example-RoundTrip-client-javascript) is a simple broadcast messages application based on Lightstreamer.
@@ -14,7 +14,7 @@ Contains the source code for a Metadata Adapter to be associated with the Round-
 It should not be used as a reference for a real case of client-originated message handling, as no guaranteed delivery and no clustering support is shown.
 <br>
 See the source code comments for further details.
-<!-- END DESCRIPTION Round-Trip Demo -->
+<!-- END DESCRIPTION lightstreamer-example-roundtrip-adapter-java -->
 
 # Build #
 
