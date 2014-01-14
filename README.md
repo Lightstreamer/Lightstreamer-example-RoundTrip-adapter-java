@@ -111,7 +111,7 @@ Please test your Adapter with one of the clients in the [list](https://github.co
 
 # See Also #
 
-## Clients using this Adapter ##
+## Clients Using this Adapter ##
 <!-- START RELATED_ENTRIES -->
 
 * [Lightstreamer - Round-Trip Demo - HTML Client](https://github.com/Weswit/Lightstreamer-example-RoundTrip-client-javascript)
@@ -119,7 +119,7 @@ Please test your Adapter with one of the clients in the [list](https://github.co
 
 <!-- END RELATED_ENTRIES -->
 
-## Related projects ##
+## Related Projects ##
 
 * [Lightstreamer - Reusable Metadata Adapters - Java Adapter](https://github.com/Weswit/Lightstreamer-example-ReusableMetadata-adapter-java)
 * [Lightstreamer - Basic Chat Demo - Java Adapter](https://github.com/Weswit/Lightstreamer-example-Chat-adapter-java)
