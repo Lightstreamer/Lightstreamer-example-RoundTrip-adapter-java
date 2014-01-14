@@ -6,10 +6,10 @@ The [Lightstreamer - Round-Trip Demo - HTML Client](https://github.com/Weswit/Li
 
 The project is comprised of source code and a deployment example. The source code is divided into two folders.
 
-## Round-Trip Data Adapter - src_roundtrip ##
+## Round-Trip Data Adapter ##
 Contains the source code for the Round-Trip Data Adapter. This Adapter broadcasts the values of received from the Metadata Adapter for the five defined items in real time.<br>
 
-## Metadata Adapter - src_metadata ##
+## Metadata Adapter ##
 Contains the source code for a Metadata Adapter to be associated with the Round-Trip Demo Data Adapter. This Metadata Adapter inherits from the reusable `LiteralBasedProvider` in [Lightstreamer - Reusable Metadata Adapters - Java Adapter](https://github.com/Weswit/Lightstreamer-example-ReusableMetadata-adapter-java) and it plays the extra-role of receiving messages from the clients and forwarding them to the Data Adapter.<br>
 It should not be used as a reference for a real case of client-originated message handling, as no guaranteed delivery and no clustering support is shown.
 <br>
