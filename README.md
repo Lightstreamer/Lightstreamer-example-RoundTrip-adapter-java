@@ -14,7 +14,7 @@ The project is comprised of source code and a deployment example.
 The source code is divided into two folders.
 
 #### Round-Trip Data Adapter
-Contains the source code for the Round-Trip Data Adapter. This Adapter broadcasts the values of received from the Metadata Adapter for the five defined items in real time.<br>
+Contains the source code for the Round-Trip Data Adapter. This Adapter broadcasts to all connected users the messages received from the Metadata Adapter for the five defined items in real time.<br>
 
 #### Metadata Adapter
 Contains the source code for a Metadata Adapter to be associated with the Round-Trip Demo Data Adapter. This Metadata Adapter inherits from the reusable `LiteralBasedProvider` in [Lightstreamer - Reusable Metadata Adapters - Java Adapter](https://github.com/Weswit/Lightstreamer-example-ReusableMetadata-adapter-java) and it plays the extra-role of receiving messages from the clients and forwarding them to the Data Adapter.<br>
@@ -104,11 +104,11 @@ To build your own version of `LS_roundtrip_data_adapter.jar` and ` LS_roundtrip_
 * Get the `ls-adapter-interface.jar`.`ls-generic-adapters.jar`, and `log4j-1.2.15.jar` files from the [latest Lightstreamer distribution](http://www.lightstreamer.com/download), and copy them into the `lib` directory.
 * Create the jars `LS_roundtrip_metadata_adapter.jar` and `LS_roundtrip_data_adapter.jar` with commands like these:
 ```sh
- >javac -source 1.7 -target 1.7 -nowarn -g -classpath compile_libs/log4j-1.2.15.jar;compile_libs/ls-adapter-interface/ls-adapter-interface.jar;compile_libs/ls-generic-adapters/ls-generic-adapters.jar -sourcepath src/src_data -d tmp_classes src/src_roundtrip/roundtrip_demo/adapters/RoundTripDataAdapter.java
+ >javac -source 1.7 -target 1.7 -nowarn -g -classpath lib/log4j-1.2.15.jar;lib/ls-adapter-interface/ls-adapter-interface.jar;lib/ls-generic-adapters/ls-generic-adapters.jar -sourcepath src/src_data -d tmp_classes src/src_roundtrip/roundtrip_demo/adapters/RoundTripDataAdapter.java
  
  >jar cvf LS_roundtrip_data_adapter.jar -C tmp_classes src_data
  
- >javac -source 1.7 -target 1.7 -nowarn -g -classpath compile_libs/log4j-1.2.15.jar;compile_libs/ls-adapter-interface/ls-adapter-interface.jar;compile_libs/ls-generic-adapters/ls-generic-adapters.jar;LS_messenger_data_adapter.jar -sourcepath src/src_metadata -d tmp_classes src/src_metadata/roundtrip_demo/adapters/RoundTripMetadataAdapter.java
+ >javac -source 1.7 -target 1.7 -nowarn -g -classpath lib/log4j-1.2.15.jar;lib/ls-adapter-interface/ls-adapter-interface.jar;lib/ls-generic-adapters/ls-generic-adapters.jar;LS_messenger_data_adapter.jar -sourcepath src/src_metadata -d tmp_classes src/src_metadata/roundtrip_demo/adapters/RoundTripMetadataAdapter.java
  
  >jar cvf LS_roundtrip_metadata_adapter.jar -C tmp_classes src_metadata
 ```
