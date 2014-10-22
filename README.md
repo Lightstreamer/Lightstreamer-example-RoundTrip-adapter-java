@@ -131,4 +131,4 @@ To build your own version of `LS_roundtrip_data_adapter.jar` and ` LS_roundtrip_
 
 ## Lightstreamer Compatibility Notes
 
-* Compatible with Lightstreamer SDK for Java Adapters since 5.1
+* Compatible with Lightstreamer SDK for Java Adapters version 5.1.x
