@@ -83,7 +83,7 @@ The `adapters.xml` file for the *Round-Trip Demo*, should look like:
 </adapters_conf>
 ```
 
-Please refer [here](http://www.lightstreamer.com/latest/Lightstreamer_Allegro-Presto-Vivace_5_1_Colosseo/Lightstreamer/DOCS-SDKs/General%20Concepts.pdf) for more details about Lightstreamer Adapters.<br>
+Please refer [here](http://www.lightstreamer.com/docs/base/General%20Concepts.pdf) for more details about Lightstreamer Adapters.<br>
 
 ## Install
 
@@ -92,7 +92,6 @@ If you want to install a version of the *Round-Trip Demo* in your local Lightstr
 * Download *Lightstreamer Server* (Lightstreamer Server comes with a free non-expiring demo license for 20 connected users) from [Lightstreamer Download page](http://www.lightstreamer.com/download.htm), and install it, as explained in the `GETTING_STARTED.TXT` file in the installation home directory.
 * Make sure that Lightstreamer Server is not running.
 * Get the `deploy.zip` file of the [latest release](https://github.com/Weswit/Lightstreamer-example-RoundTrip-adapter-java/releases), unzip it, and copy the `roundtrip` folder into the `adapters` folder of your Lightstreamer Server installation.
-* Copy the `ls-generic-adapters.jar` file from the `lib` directory of the sibling "Reusable_MetadataAdapters" SDK example to the `shared/lib` subdirectory in your Lightstreamer Server installation home directory.
 * Launch Lightstreamer Server.
 * Test the Adapter, launching the [Lightstreamer - Round-Trip Demo - HTML Client](https://github.com/Weswit/Lightstreamer-example-RoundTrip-client-javascript) listed in [Clients Using This Adapter](https://github.com/Weswit/Lightstreamer-example-RoundTrip-adapter-java#clients-using-this-adapter).
 
@@ -101,14 +100,14 @@ If you want to install a version of the *Round-Trip Demo* in your local Lightstr
 To build your own version of `LS_roundtrip_data_adapter.jar` and ` LS_roundtrip_metadata_adapter.jar`, instead of using the one provided in the `deploy.zip` file from the [Install](https://github.com/Weswit/Lightstreamer-example-RoundTrip-adapter-java#install) section above, follow these steps:
 
 * Download this project.
-* Get the `ls-adapter-interface.jar`,`ls-generic-adapters.jar`, and `log4j-1.2.15.jar` files from the [latest Lightstreamer distribution](http://www.lightstreamer.com/download), and copy them into the `lib` directory.
+* Get the `ls-adapter-interface.jar` and `log4j-1.2.15.jar` files from the [latest Lightstreamer distribution](http://www.lightstreamer.com/download), and copy them into the `lib` directory.
 * Create the jars `LS_roundtrip_metadata_adapter.jar` and `LS_roundtrip_data_adapter.jar` with commands like these:
 ```sh
- >javac -source 1.7 -target 1.7 -nowarn -g -classpath lib/log4j-1.2.15.jar;lib/ls-adapter-interface/ls-adapter-interface.jar;lib/ls-generic-adapters/ls-generic-adapters.jar -sourcepath src/src_data -d tmp_classes src/src_roundtrip/roundtrip_demo/adapters/RoundTripDataAdapter.java
+ >javac -source 1.7 -target 1.7 -nowarn -g -classpath lib/log4j-1.2.15.jar;lib/ls-adapter-interface/ls-adapter-interface.jar -sourcepath src/src_data -d tmp_classes src/src_roundtrip/roundtrip_demo/adapters/RoundTripDataAdapter.java
  
  >jar cvf LS_roundtrip_data_adapter.jar -C tmp_classes src_data
  
- >javac -source 1.7 -target 1.7 -nowarn -g -classpath lib/log4j-1.2.15.jar;lib/ls-adapter-interface/ls-adapter-interface.jar;lib/ls-generic-adapters/ls-generic-adapters.jar;LS_messenger_data_adapter.jar -sourcepath src/src_metadata -d tmp_classes src/src_metadata/roundtrip_demo/adapters/RoundTripMetadataAdapter.java
+ >javac -source 1.7 -target 1.7 -nowarn -g -classpath lib/log4j-1.2.15.jar;lib/ls-adapter-interface/ls-adapter-interface.jar;LS_messenger_data_adapter.jar -sourcepath src/src_metadata -d tmp_classes src/src_metadata/roundtrip_demo/adapters/RoundTripMetadataAdapter.java
  
  >jar cvf LS_roundtrip_metadata_adapter.jar -C tmp_classes src_metadata
 ```
@@ -131,4 +130,5 @@ To build your own version of `LS_roundtrip_data_adapter.jar` and ` LS_roundtrip_
 
 ## Lightstreamer Compatibility Notes
 
-* Compatible with Lightstreamer SDK for Java Adapters version 5.1.x
+* Compatible with Lightstreamer SDK for Java In-Process Adapters since 6.0
+- For a version of this example compatible with Lightstreamer SDK for Java Adapters version 5.1, please refer to [this tag](https://github.com/Weswit/Lightstreamer-example-RoundTrip-adapter-java/tree/for_Lightstreamer_5.1).
