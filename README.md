@@ -100,14 +100,15 @@ If you want to install a version of the *Round-Trip Demo* in your local Lightstr
 To build your own version of `LS_roundtrip_data_adapter.jar` and ` LS_roundtrip_metadata_adapter.jar`, instead of using the one provided in the `deploy.zip` file from the [Install](https://github.com/Weswit/Lightstreamer-example-RoundTrip-adapter-java#install) section above, follow these steps:
 
 * Download this project.
-* Get the `ls-adapter-interface.jar` and `log4j-1.2.15.jar` files from the [latest Lightstreamer distribution](http://www.lightstreamer.com/download), and copy them into the `lib` directory.
+* Get the `ls-adapter-interface.jar` file from the [latest Lightstreamer distribution](http://www.lightstreamer.com/download), and copy it into the `lib` folder.
+* Get the `log4j-1.2.17.jar` file from [Apache log4j](https://logging.apache.org/log4j/1.2/) and copy it into the `lib` folder.
 * Create the jars `LS_roundtrip_metadata_adapter.jar` and `LS_roundtrip_data_adapter.jar` with commands like these:
 ```sh
- >javac -source 1.7 -target 1.7 -nowarn -g -classpath lib/log4j-1.2.15.jar;lib/ls-adapter-interface/ls-adapter-interface.jar -sourcepath src/src_data -d tmp_classes src/src_roundtrip/roundtrip_demo/adapters/RoundTripDataAdapter.java
+ >javac -source 1.7 -target 1.7 -nowarn -g -classpath lib/log4j-1.2.17.jar;lib/ls-adapter-interface/ls-adapter-interface.jar -sourcepath src/src_data -d tmp_classes src/src_roundtrip/roundtrip_demo/adapters/RoundTripDataAdapter.java
  
  >jar cvf LS_roundtrip_data_adapter.jar -C tmp_classes src_data
  
- >javac -source 1.7 -target 1.7 -nowarn -g -classpath lib/log4j-1.2.15.jar;lib/ls-adapter-interface/ls-adapter-interface.jar;LS_messenger_data_adapter.jar -sourcepath src/src_metadata -d tmp_classes src/src_metadata/roundtrip_demo/adapters/RoundTripMetadataAdapter.java
+ >javac -source 1.7 -target 1.7 -nowarn -g -classpath lib/log4j-1.2.17.jar;lib/ls-adapter-interface/ls-adapter-interface.jar;LS_messenger_data_adapter.jar -sourcepath src/src_metadata -d tmp_classes src/src_metadata/roundtrip_demo/adapters/RoundTripMetadataAdapter.java
  
  >jar cvf LS_roundtrip_metadata_adapter.jar -C tmp_classes src_metadata
 ```
