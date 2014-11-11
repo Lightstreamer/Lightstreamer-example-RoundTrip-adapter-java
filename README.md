@@ -91,7 +91,7 @@ If you want to install a version of the *Round-Trip Demo* in your local Lightstr
 
 * Download *Lightstreamer Server* (Lightstreamer Server comes with a free non-expiring demo license for 20 connected users) from [Lightstreamer Download page](http://www.lightstreamer.com/download.htm), and install it, as explained in the `GETTING_STARTED.TXT` file in the installation home directory.
 * Make sure that Lightstreamer Server is not running.
-* Get the `deploy.zip` file of the [latest release](https://github.com/Weswit/Lightstreamer-example-RoundTrip-adapter-java/releases), unzip it, and copy the `roundtrip` folder into the `adapters` folder of your Lightstreamer Server installation.
+* Get the `deploy.zip` file of the [latest release](https://github.com/Weswit/Lightstreamer-example-RoundTrip-adapter-java/releases), unzip it, and copy the `RoundTrip` folder into the `adapters` folder of your Lightstreamer Server installation.
 * Launch Lightstreamer Server.
 * Test the Adapter, launching the [Lightstreamer - Round-Trip Demo - HTML Client](https://github.com/Weswit/Lightstreamer-example-RoundTrip-client-javascript) listed in [Clients Using This Adapter](https://github.com/Weswit/Lightstreamer-example-RoundTrip-adapter-java#clients-using-this-adapter).
 
