@@ -36,51 +36,52 @@ The `adapters.xml` file for the *Round-Trip Demo*, should look like:
   <!-- Mandatory. Define an Adapter Set and sets its unique ID. -->
   <adapters_conf id="ROUNDTRIPDEMO">
 
-    <!-- Mandatory. Define the Metadata Adapter. -->
-    <metadata_provider>
+    <!--
+      Not all configuration options of an Adapter Set are exposed by this file.
+      You can easily expand your configurations using the generic template,
+      `DOCS-SDKs/sdk_adapter_java_inprocess/doc/adapter_conf_template/adapters.xml`,
+      as a reference.
+    -->
 
-        <!-- Mandatory. Java class name of the adapter. -->
-        <adapter_class>roundtrip_demo.adapters.RoundTripMetadataAdapter</adapter_class>
+    <metadata_adapter_initialised_first>Y</metadata_adapter_initialised_first>
 
-        <!-- Optional for RoundTripMetadataAdapter.
-             Configuration file for the Adapter's own logging.
-             Logging is managed through log4j. -->
-        <param name="log_config">adapters_log_conf.xml</param>
-        <param name="log_config_refresh_seconds">10</param>
+      <metadata_provider>
 
-        <!-- Optional, managed by the inherited LiteralBasedProvider.
-             See LiteralBasedProvider javadoc. -->
-        <!--
-        <param name="max_bandwidth">40</param>
-        <param name="max_frequency">3</param>
-        <param name="buffer_size">30</param>
-        <param name="prefilter_frequency">5</param>
-        <param name="allowed_users">user123,user456</param>
-        <param name="distinct_snapshot_length">30</param>
-        -->
+          <adapter_class>roundtrip_demo.adapters.RoundTripMetadataAdapter</adapter_class>
 
-        <!-- Optional, managed by the inherited LiteralBasedProvider.
-             See LiteralBasedProvider javadoc. -->
-        <param name="item_family_1">roundtrip\d{1,2}</param>
-        <param name="modes_for_item_family_1">MERGE</param>
+          <!-- Optional for RoundTripMetadataAdapter.
+               Configuration file for the Adapter's own logging.
+               Logging is managed through log4j. -->
+          <param name="log_config">adapters_log_conf.xml</param>
+          <param name="log_config_refresh_seconds">10</param>
 
-    </metadata_provider>
+          <!-- Optional, managed by the inherited LiteralBasedProvider.
+               See LiteralBasedProvider javadoc. -->
+          <!--
+          <param name="max_bandwidth">40</param>
+          <param name="max_frequency">3</param>
+          <param name="buffer_size">30</param>
+          <param name="prefilter_frequency">5</param>
+          <param name="allowed_users">user123,user456</param>
+          <param name="distinct_snapshot_length">30</param>
+          -->
+
+          <!-- Optional, managed by the inherited LiteralBasedProvider.
+               See LiteralBasedProvider javadoc. -->
+          <param name="item_family_1">roundtrip\d{1,2}</param>
+          <param name="modes_for_item_family_1">MERGE</param>
+
+      </metadata_provider>
 
 
-    <data_provider name="ROUNDTRIP">
+      <data_provider name="ROUNDTRIP_ADAPTER">
 
-        <!-- Mandatory. Java class name of the adapter. -->
-        <adapter_class>roundtrip_demo.adapters.RoundTripDataAdapter</adapter_class>
+          <adapter_class>roundtrip_demo.adapters.RoundTripDataAdapter</adapter_class>
 
-        <!-- Optional for RoundTripDataAdapter.
-             Configuration file for the Adapter's own logging.
-             Leans on the Metadata Adapter for the configuration refresh.
-             Logging is managed through log4j. -->
-        <param name="log_config">adapters_log_conf.xml</param>
+      </data_provider>
 
-    </data_provider>
 
-</adapters_conf>
+  </adapters_conf>
 ```
 
 <i>NOTE: not all configuration options of an Adapter Set are exposed by the file suggested above. 
