@@ -83,16 +83,7 @@ public class RoundTripDataAdapter implements SmartDataProvider {
     }
 
     public void init(Map params, File configDir) throws DataProviderException {
-        String logConfig = (String) params.get("log_config");
-        if (logConfig != null) {
-            File logConfigFile = new File(configDir, logConfig);
-            String logRefresh = (String) params.get("log_config_refresh_seconds");
-            if (logRefresh != null) {
-                DOMConfigurator.configureAndWatch(logConfigFile.getAbsolutePath(), Integer.parseInt(logRefresh) * 1000);
-            } else {
-                DOMConfigurator.configure(logConfigFile.getAbsolutePath());
-            }
-        }
+
         logger = Logger.getLogger("LS_demos_Logger.RoundTrip");
 
         // Read the Adapter Set name, which is supplied by the Server as a parameter
