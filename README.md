@@ -108,13 +108,11 @@ To build your own version of `LS_roundtrip_data_adapter.jar` and ` LS_roundtrip_
 * Get the `log4j-1.2.17.jar` file from [Apache log4j](https://logging.apache.org/log4j/1.2/) and copy it into the `lib` folder.
 * Create the jars `LS_roundtrip_metadata_adapter.jar` and `LS_roundtrip_data_adapter.jar` with commands like these:
 ```sh
- >javac -source 1.7 -target 1.7 -nowarn -g -classpath lib/log4j-1.2.17.jar;lib/ls-adapter-interface/ls-adapter-interface.jar -sourcepath src/src_data -d tmp_classes/data src/src_roundtrip/roundtrip_demo/adapters/RoundTripDataAdapter.java
- 
- >jar cvf LS_roundtrip_data_adapter.jar -C tmp_classes/data .
- 
- >javac -source 1.7 -target 1.7 -nowarn -g -classpath lib/log4j-1.2.17.jar;lib/ls-adapter-interface/ls-adapter-interface.jar;LS_roundtrip_data_adapter.jar -sourcepath src/src_metadata -d tmp_classes/metadata src/src_metadata/roundtrip_demo/adapters/RoundTripMetadataAdapter.java
- 
- >jar cvf LS_roundtrip_metadata_adapter.jar -C tmp_classes/metadata .
+ > mkdir tmp_classes/data tmp_classes/metadata
+ > javac -source 1.7 -target 1.7 -nowarn -g -classpath lib/log4j-1.2.17.jar;lib/ls-adapter-interface.jar -sourcepath src/src_data -d tmp_classes/data src/src_roundtrip/roundtrip_demo/adapters/RoundTripDataAdapter.java
+ > jar cvf LS_roundtrip_data_adapter.jar -C tmp_classes/data .
+ > javac -source 1.7 -target 1.7 -nowarn -g -classpath lib/log4j-1.2.17.jar;lib/ls-adapter-interface.jar;LS_roundtrip_data_adapter.jar -sourcepath src/src_metadata -d tmp_classes/metadata src/src_metadata/roundtrip_demo/adapters/RoundTripMetadataAdapter.java
+ > jar cvf LS_roundtrip_metadata_adapter.jar -C tmp_classes/metadata .
 ```
 
 ## See Also
