@@ -31,44 +31,42 @@ This Adapter Set is configured and will be referenced by the clients as `ROUNDTR
 
 The `adapters.xml` file for the *Round-Trip Demo*, should look like:
 ```xml      
-  <?xml version="1.0"?>
+<?xml version="1.0"?>
+<adapters_conf id="ROUNDTRIPDEMO">
 
-  <!-- Mandatory. Define an Adapter Set and sets its unique ID. -->
-  <adapters_conf id="ROUNDTRIPDEMO">
+<metadata_adapter_initialised_first>Y</metadata_adapter_initialised_first>
 
-    <metadata_adapter_initialised_first>Y</metadata_adapter_initialised_first>
+  <metadata_provider>
 
-      <metadata_provider>
+	  <adapter_class>roundtrip_demo.adapters.RoundTripMetadataAdapter</adapter_class>
 
-          <adapter_class>roundtrip_demo.adapters.RoundTripMetadataAdapter</adapter_class>
+	  <!-- Optional, managed by the inherited LiteralBasedProvider.
+		   See LiteralBasedProvider javadoc. -->
+	  <!--
+	  <param name="max_bandwidth">40</param>
+	  <param name="max_frequency">3</param>
+	  <param name="buffer_size">30</param>
+	  <param name="prefilter_frequency">5</param>
+	  <param name="allowed_users">user123,user456</param>
+	  <param name="distinct_snapshot_length">30</param>
+	  -->
 
-          <!-- Optional, managed by the inherited LiteralBasedProvider.
-               See LiteralBasedProvider javadoc. -->
-          <!--
-          <param name="max_bandwidth">40</param>
-          <param name="max_frequency">3</param>
-          <param name="buffer_size">30</param>
-          <param name="prefilter_frequency">5</param>
-          <param name="allowed_users">user123,user456</param>
-          <param name="distinct_snapshot_length">30</param>
-          -->
+	  <!-- Optional, managed by the inherited LiteralBasedProvider.
+		   See LiteralBasedProvider javadoc. -->
+	  <param name="item_family_1">roundtrip\d{1,2}</param>
+	  <param name="modes_for_item_family_1">MERGE</param>
 
-          <!-- Optional, managed by the inherited LiteralBasedProvider.
-               See LiteralBasedProvider javadoc. -->
-          <param name="item_family_1">roundtrip\d{1,2}</param>
-          <param name="modes_for_item_family_1">MERGE</param>
-
-      </metadata_provider>
+  </metadata_provider>
 
 
-      <data_provider name="ROUNDTRIP_ADAPTER">
+  <data_provider name="ROUNDTRIP_ADAPTER">
 
-          <adapter_class>roundtrip_demo.adapters.RoundTripDataAdapter</adapter_class>
+	  <adapter_class>roundtrip_demo.adapters.RoundTripDataAdapter</adapter_class>
 
-      </data_provider>
+  </data_provider>
 
 
-  </adapters_conf>
+</adapters_conf>
 ```
 
 <i>NOTE: not all configuration options of an Adapter Set are exposed by the file suggested above. 
