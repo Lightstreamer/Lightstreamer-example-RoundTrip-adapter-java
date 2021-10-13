@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package roundtrip_demo.adapters;
+package com.lightstreamer.examples.roundtrip_demo.adapters;
 
 import java.io.File;
 import java.text.SimpleDateFormat;

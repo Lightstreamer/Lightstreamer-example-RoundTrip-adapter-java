@@ -35,9 +35,6 @@
             </goals>
           </execution>
         </executions>
-        <configuration>
-          <mainClass>roundtrip_demo.adapters.RoundTripMetadataAdapter</mainClass>
-        </configuration>
       </plugin>
          
     </plugins>

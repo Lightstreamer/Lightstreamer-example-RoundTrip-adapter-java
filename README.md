@@ -38,7 +38,7 @@ The `adapters.xml` file for the *Round-Trip Demo*, should look like:
 
   <metadata_provider>
 
-	  <adapter_class>roundtrip_demo.adapters.RoundTripMetadataAdapter</adapter_class>
+	  <adapter_class>com.lightstreamer.examples.roundtrip_demo.adapters.RoundTripMetadataAdapter</adapter_class>
 
 	  <!-- Optional, managed by the inherited LiteralBasedProvider.
 		   See LiteralBasedProvider javadoc. -->
@@ -61,7 +61,7 @@ The `adapters.xml` file for the *Round-Trip Demo*, should look like:
 
   <data_provider name="ROUNDTRIP_ADAPTER">
 
-	  <adapter_class>roundtrip_demo.adapters.RoundTripDataAdapter</adapter_class>
+	  <adapter_class>com.lightstreamer.examples.roundtrip_demo.adapters.RoundTripDataAdapter</adapter_class>
 
   </data_provider>
 
