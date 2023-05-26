@@ -83,11 +83,11 @@ If you want to install a version of the *Round-Trip Demo* in your local Lightstr
 * Get the `deploy.zip` file of the [latest release](https://github.com/Lightstreamer/Lightstreamer-example-RoundTrip-adapter-java/releases), unzip it, and copy the `RoundTripDemo` folder into the `adapters` folder of your Lightstreamer Server installation.
 * [Optional] Customize the logging settings in log4j configuration file: `RoundTripDemo/classes/log4j2.xml`.
 * Launch Lightstreamer Server.
-* Test the Adapter, launching the [Lightstreamer - Round-Trip Demo - HTML Client](https://github.com/Lightstreamer/Lightstreamer-example-RoundTrip-client-javascript) listed in [Clients Using This Adapter](https://github.com/Lightstreamer/Lightstreamer-example-RoundTrip-adapter-java#clients-using-this-adapter).
+* Test the Adapter, launching the [Lightstreamer - Round-Trip Demo - HTML Client](https://github.com/Lightstreamer/Lightstreamer-example-RoundTrip-client-javascript) listed in [Clients Using This Adapter](#clients-using-this-adapter).
 
 ## Build
 
-To build your own version of `roundtrip-adapter-java-x.y.z.jar` instead of using the one provided in the `deploy.zip` file from the [Install](https://github.com/Lightstreamer/Lightstreamer-example-RoundTrip-adapter-java#install) section above, you have two options:
+To build your own version of `roundtrip-adapter-java-x.y.z.jar` instead of using the one provided in the `deploy.zip` file from the [Install](#install) section above, you have two options:
 either use [Maven](https://maven.apache.org/) (or other build tools) to take care of dependencies and building (recommended) or gather the necessary jars yourself and build it manually.
 For the sake of simplicity only the Maven case is detailed here.
 
