@@ -18,6 +18,8 @@ package com.lightstreamer.examples.roundtrip_demo.adapters;
 
 import java.io.File;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.LogManager;
@@ -83,8 +85,10 @@ public class RoundTripMetadataAdapter extends LiteralBasedProvider {
      * Triggered by a client "sendMessage" call.
      * The message encodes a chat message from the client.
      */
-    public void notifyUserMessage(String user, String session, String message)
+    public CompletionStage<String> notifyUserMessage(String user, String session, String message)
         throws NotificationException, CreditsException {
+
+        // we won't introduce blocking operations, hence we can proceed inline
 
         if (message == null) {
             logger.warn("Null message received");
@@ -99,6 +103,8 @@ public class RoundTripMetadataAdapter extends LiteralBasedProvider {
 
         this.loadRTFeed();
         this.handleRTMessage(pieces,message,session);
+
+        return CompletableFuture.completedStage(null);
     }
 
     public void notifyNewSession(String user, String session, Map sessionInfo)

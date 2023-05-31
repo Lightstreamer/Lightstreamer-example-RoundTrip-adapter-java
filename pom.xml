@@ -4,7 +4,7 @@
 
   <groupId>com.lightstreamer.examples</groupId>
   <artifactId>roundtrip-adapter-java</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <packaging>jar</packaging>
 
   <name>Lightstreamer Round-Trip Demo Java Adapter</name>
@@ -57,7 +57,7 @@
     <dependency>
       <groupId>com.lightstreamer</groupId>
       <artifactId>ls-adapter-inprocess</artifactId>
-      <version>7.3.0</version>
+      <version>8.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
