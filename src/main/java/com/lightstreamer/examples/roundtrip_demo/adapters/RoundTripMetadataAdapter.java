@@ -104,7 +104,7 @@ public class RoundTripMetadataAdapter extends LiteralBasedProvider {
         this.loadRTFeed();
         this.handleRTMessage(pieces,message,session);
 
-        return CompletableFuture.completedStage(null);
+        return CompletableFuture.completedFuture(null);
     }
 
     public void notifyNewSession(String user, String session, Map sessionInfo)
