@@ -19,18 +19,23 @@ package com.lightstreamer.examples.roundtrip_demo.adapters;
 import java.io.File;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CompletionStage;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.lightstreamer.adapters.metadata.LiteralBasedProvider;
-import com.lightstreamer.interfaces.metadata.CreditsException;
-import com.lightstreamer.interfaces.metadata.MetadataProviderException;
-import com.lightstreamer.interfaces.metadata.NotificationException;
+import com.lightstreamer.adapter.common.InitException;
+import com.lightstreamer.adapter.metadata.CreditsException;
+import com.lightstreamer.adapter.metadata.LoginInfo;
+import com.lightstreamer.adapter.metadata.MessageException;
+import com.lightstreamer.adapter.metadata.MetadataAdapter;
+import com.lightstreamer.adapter.metadata.SessionListener;
+import com.lightstreamer.adapter.metadata.SessionRequestHandler;
+import com.lightstreamer.adapter.metadata.SubscriptionHandler;
+import com.lightstreamer.adapter.metadata.SubscriptionInfo;
 
 
-public class RoundTripMetadataAdapter extends LiteralBasedProvider {
+public class RoundTripMetadataAdapter implements MetadataAdapter {
 
     /**
      * The associated feed to which messages will be forwarded;
@@ -39,10 +44,9 @@ public class RoundTripMetadataAdapter extends LiteralBasedProvider {
     private volatile RoundTripDataAdapter rtFeed;
 
     /**
-     * Unique identification of the related RoundTrip Data Adapter instance;
-     * see feedMap on the RoundTripDataAdapter.
+     * The name of the Data Adapter currently associated with rtFeed.
      */
-    private String adapterSetId;
+    private volatile String rtFeedName;
 
     /**
      * Private logger; a specific "LS_demos_Logger.RoundTrip" category
@@ -50,133 +54,122 @@ public class RoundTripMetadataAdapter extends LiteralBasedProvider {
      */
     private Logger logger;
 
-    /**
-     * Keeps the client context information supplied by Lightstreamer on the
-     * new session notifications.
-     * Session information is needed to pass the IP to the RoundTrip Data Adapter.
-     */
-    private ConcurrentHashMap<String,Map<String,String>> sessions = new ConcurrentHashMap<String,Map<String,String>>();
-
-    public RoundTripMetadataAdapter() {
-    }
-
-    public void init(Map params, File configDir) throws MetadataProviderException {
-        //Call super's init method to handle basic Metadata Adapter features
-        super.init(params,configDir);
+    @Override
+    public void init(Map<String, String> params, File configDir) throws InitException {
 
         logger = LogManager.getLogger("LS_demos_Logger.RoundTrip");
-
-        // Read the Adapter Set name, which is supplied by the Server as a parameter
-        this.adapterSetId = (String) params.get("adapters_conf.id");
-
-        /*
-         * Note: the RoundTripDataAdapter instance cannot be looked for
-         * here to initialize the "rtFeed" variable, because the RoundTrip
-         * Data Adapter may not be loaded and initialized at this moment.
-         * We need to wait until the first "sendMessage" occurrence;
-         * then we can store the reference for later use.
-         */
 
         logger.info("RoundTripMetadataAdapter ready");
     }
 
-    /**
-     * Triggered by a client "sendMessage" call.
-     * The message encodes a chat message from the client.
-     */
-    public CompletableFuture<String> notifyUserMessage(String user, String session, String message)
-        throws NotificationException, CreditsException {
-
-        // we won't introduce blocking operations, hence we can proceed inline
-
-        if (message == null) {
-            logger.warn("Null message received");
-            throw new NotificationException("Null message received");
+    @Override
+    public void onDataAdapterAvailable(String dataAdapterName, Object dataAdapter) {
+        if (!(dataAdapter instanceof RoundTripDataAdapter)) {
+            // Ignore Data Adapters of different types
+            return;
         }
-
-        //Split the string on the | character
-        //The message must be of the form "RT|n|message" 
-        //(where n is the number that identifies the item
-        //and message is the message to be published)
-        String[] pieces = message.split("\\|", -1);
-
-        this.loadRTFeed();
-        this.handleRTMessage(pieces,message,session);
-
-        return CompletableFuture.completedFuture(null);
+        if (this.rtFeed != null) {
+            logger.warn("A RoundTripDataAdapter instance is already available; ignoring the new one: " + dataAdapterName);
+            return;
+        }
+        this.rtFeedName = dataAdapterName;
+        this.rtFeed = (RoundTripDataAdapter) dataAdapter;
+        logger.info("RoundTripDataAdapter available: " + dataAdapterName);
     }
 
-    public void notifyNewSession(String user, String session, Map sessionInfo)
-            throws CreditsException, NotificationException {
-
-        //we can't have duplicate sessions
-        assert(!sessions.containsKey(session));
-
-        // Register the session details on the sessions HashMap.
-        sessions.put(session, sessionInfo);
-
-    }
-
-    public void notifySessionClose(String session) throws NotificationException {
-        //the session must exist to be closed
-        assert(sessions.containsKey(session));
-
-        //we have to remove session information from the session HashMap
-        sessions.remove(session);
-    }
-
-    private void loadRTFeed() throws CreditsException {
-        if (this.rtFeed == null) {
-             try {
-                 // Get the RoundTripDataAdapter instance to bind it with this
-                 // Metadata Adapter and send chat messages through it
-                 this.rtFeed = RoundTripDataAdapter.feedMap.get(this.adapterSetId);
-             } catch(Throwable t) {
-                 // It can happen if the RoundTrip Data Adapter jar was not even
-                 // included in the Adapter Set lib directory (the RoundTrip
-                 // Data Adapter could not be included in the Adapter Set as well)
-                 logger.error("RoundTripDataAdapter class was not loaded: " + t);
-                 throw new CreditsException(0, "No roundtrip feed available", "No roundtrip feed available");
-             }
-
-             if (this.rtFeed == null) {
-                 // The feed is not yet available on the static map, maybe the
-                 // RoundTrip Data Adapter was not included in the Adapter Set
-                 logger.error("RoundTripDataAdapter not found");
-                 throw new CreditsException(0, "No roundtrip feed available", "No roundtrip feed available");
-             }
+    @Override
+    public void onDataAdapterUnavailable(String dataAdapterName) {
+        if (dataAdapterName.equals(this.rtFeedName)) {
+            this.rtFeed = null;
+            this.rtFeedName = null;
+            logger.info("RoundTripDataAdapter unavailable: " + dataAdapterName);
         }
     }
 
-    private void handleRTMessage(String[] pieces, String message, String session) throws NotificationException {
-        if (pieces.length < 3) {
-            logger.warn("Wrong message received: " + message);
-            throw new NotificationException("Wrong message received");
-        }
+    @Override
+    public CompletionStage<SessionRequestHandler> loginAsync(LoginInfo loginInfo) {
+        //////////////////////////////////////////////////////////////////////////
+        // WARNING: No authentication logic is implemented; any login is accepted.
+        // This is suitable for demos only and MUST NOT be used in production.
+        //////////////////////////////////////////////////////////////////////////
+        Map<String, String> clientContext = loginInfo.getClientContext();
 
-        //extract session info
-        Map<String,String> sessionInfo = sessions.get(session);
-        if (sessionInfo == null) {
-             logger.warn("Message received from non-existent session: " + message);
-             throw new NotificationException("Wrong message received");
-        }
-        //read from info the IP of the user
-        String ip =  sessionInfo.get("REMOTE_IP");
+        return CompletableFuture.completedFuture(new SessionRequestHandler() {
 
-        //Check the message, it must be of the form "RT|n|message"
-        //(where n is the number that identifies the item
-        //and message is the message to be published)
-        if (pieces[0].equals("RT")) {
-            //and send it to the feed
-            if (!this.rtFeed.sendMessage(ip,pieces[1],message)) {
-                 logger.warn("Wrong message received: " + message);
-                 throw new NotificationException("Wrong message received");
+            @Override
+            public void onStart(SessionListener listener) {
             }
-        } else {
-             logger.warn("Wrong message received: " + message);
-             throw new NotificationException("Wrong message received");
-        }
 
+            @Override
+            public void onClose() {
+            }
+
+            @Override
+            public Double getAllowedMaxBandwidth() {
+                return null;
+            }
+
+            @Override
+            public CompletionStage<SubscriptionHandler> newSubscription(SubscriptionInfo info) {
+                return CompletableFuture.completedFuture(new SubscriptionHandler(info));
+            }
+
+            /**
+             * Triggered by a client "sendMessage" call.
+             * The message encodes a chat message from the client.
+             */
+            @Override
+            public CompletionStage<String> userMessageAsync(String message)
+                    throws CreditsException, MessageException {
+
+                // we won't introduce blocking operations, hence we can proceed inline
+
+                if (message == null) {
+                    logger.warn("Null message received");
+                    throw new MessageException("Null message received");
+                }
+
+                //Split the string on the | character
+                //The message must be of the form "RT|n|message" 
+                //(where n is the number that identifies the item
+                //and message is the message to be published)
+                String[] pieces = message.split("\\|", -1);
+
+                if (rtFeed == null) {
+                     // The RoundTrip Data Adapter is not available
+                     logger.error("RoundTripDataAdapter not found");
+                     throw new CreditsException("No roundtrip feed available", 0, "No roundtrip feed available");
+                }
+
+                if (pieces.length < 3) {
+                    logger.warn("Wrong message received: " + message);
+                    throw new MessageException("Wrong message received");
+                }
+
+                //read from the client context the IP of the user
+                String ip = clientContext.get("REMOTE_IP");
+
+                //Check the message, it must be of the form "RT|n|message"
+                //(where n is the number that identifies the item
+                //and message is the message to be published)
+                if (pieces[0].equals("RT")) {
+                    //and send it to the feed
+                    if (!rtFeed.sendMessage(ip,pieces[1],message)) {
+                         logger.warn("Wrong message received: " + message);
+                         throw new MessageException("Wrong message received");
+                    }
+                } else {
+                     logger.warn("Wrong message received: " + message);
+                     throw new MessageException("Wrong message received");
+                }
+
+                return CompletableFuture.completedFuture(null);
+            }
+        });
+    }
+
+    @Override
+    public void shutdown() {
     }
 
 }

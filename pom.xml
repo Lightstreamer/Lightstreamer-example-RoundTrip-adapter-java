@@ -4,15 +4,15 @@
 
   <groupId>com.lightstreamer.examples</groupId>
   <artifactId>roundtrip-adapter-java</artifactId>
-  <version>1.1.0</version>
+  <version>2.0.0</version>
   <packaging>jar</packaging>
 
   <name>Lightstreamer Round-Trip Demo Java Adapter</name>
   <url>https://github.com/Lightstreamer/Lightstreamer-example-RoundTrip-adapter-java</url>
 
   <properties>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -55,14 +55,15 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.lightstreamer</groupId>
-      <artifactId>ls-adapter-inprocess</artifactId>
-      <version>8.0.0</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
       <version>2.17.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.lightstreamer</groupId>
+      <artifactId>ls-adapter-inprocess</artifactId>
+      <version>9.0.0</version>
+      <classifier>v9plus</classifier>
     </dependency>
   </dependencies>
   

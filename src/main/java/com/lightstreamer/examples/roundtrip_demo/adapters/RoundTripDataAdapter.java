@@ -21,6 +21,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,26 +30,15 @@ import java.util.concurrent.Executors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.lightstreamer.interfaces.data.DataProviderException;
-import com.lightstreamer.interfaces.data.FailureException;
-import com.lightstreamer.interfaces.data.ItemEventListener;
-import com.lightstreamer.interfaces.data.SmartDataProvider;
-import com.lightstreamer.interfaces.data.SubscriptionException;
+import com.lightstreamer.adapter.common.InitException;
+import com.lightstreamer.adapter.common.Mode;
+import com.lightstreamer.adapter.data.DataAdapter;
+import com.lightstreamer.adapter.data.ItemListener;
+import com.lightstreamer.adapter.data.ItemManager;
+import com.lightstreamer.adapter.data.SubscriptionException;
 
 
-public class RoundTripDataAdapter implements SmartDataProvider {
-
-    /**
-     * A static map, to be used by the Metadata Adapter to find the data
-     * adapter instance; this allows the Metadata Adapter to forward client
-     * messages to the adapter.
-     * The map allows multiple instances of this Data Adapter to be included
-     * in different Adapter Sets. Each instance is identified with the name
-     * of the related Adapter Set; defining multiple instances in the same
-     * Adapter Set is not allowed.
-     */
-    public static final ConcurrentHashMap<String, RoundTripDataAdapter> feedMap =
-        new ConcurrentHashMap<String, RoundTripDataAdapter>();
+public class RoundTripDataAdapter implements DataAdapter {
 
     private static final int MAX_MESSAGE_LENGTH = 500;
 
@@ -58,31 +49,23 @@ public class RoundTripDataAdapter implements SmartDataProvider {
     private Logger logger;
 
     /**
-     * The listener of updates set by Lightstreamer Kernel.
-     */
-    private ItemEventListener listener;
-
-    /**
      * Used to enqueue the calls to the listener.
      */
     private final ExecutorService executor;
 
     /**
      * A map containing every active subscriptions;
-     * It associates each item name with the item handle to be used
-     * to identify the item towards Lightstreamer Kernel.
+     * It associates each item name with the corresponding item manager.
      */
-    private final ConcurrentHashMap<String, Object> subscriptions =
-        new ConcurrentHashMap<String, Object>();
-    
-    private final ConcurrentHashMap<String, HashMap<String,String>> snapshots =
-        new ConcurrentHashMap<String, HashMap<String,String>>();
+    private final ConcurrentHashMap<String, RoundTripItemManager> subscriptions =
+        new ConcurrentHashMap<String, RoundTripItemManager>();
 
     public RoundTripDataAdapter() {
         executor = Executors.newSingleThreadExecutor();
     }
 
-    public void init(Map params, File configDir) throws DataProviderException {
+    @Override
+    public void init(Map<String, String> params, File configDir) throws InitException {
 
         // Logging configuration for the demo is carried out in the init
         // method of Metadata Adapter. In order to be sure that this method 
@@ -91,89 +74,128 @@ public class RoundTripDataAdapter implements SmartDataProvider {
         // <metadata_adapter_initialised_first>Y</metadata_adapter_initialised_first>
         logger = LogManager.getLogger("LS_demos_Logger.RoundTrip");
 
-        // Read the Adapter Set name, which is supplied by the Server as a parameter
-        String adapterSetId = (String) params.get("adapters_conf.id");
-
-        // Put a reference to this instance on a static map
-        // to be read by the Metadata Adapter
-        feedMap.put(adapterSetId, this);
-
         // Adapter ready
         logger.info("RounTripDataAdapter ready");
 
     }
 
-    public void subscribe(String item, Object handle, boolean arg2)
-            throws SubscriptionException, FailureException {
+    @Override
+    public CompletionStage<ItemManager> getItemManager(String itemName)
+            throws SubscriptionException {
 
-        assert(! subscriptions.containsKey(item));
-
-        if (!item.matches("^roundtrip[01234]$")) {
+        if (!itemName.matches("^roundtrip[01234]$")) {
             //valid items are in the range rountrip0 - roundtrip4
             throw new SubscriptionException("No such item");
         }
 
-        // Add the new item to the list of subscribed items
-        subscriptions.put(item, handle);
-        
-        //send the snapshot
-        sendSnapshot(item);
-        
-        logger.info(item + " subscribed");
-
+        return CompletableFuture.completedFuture(new RoundTripItemManager(itemName));
     }
-    
-    public void sendSnapshot(String item) {
-        final Object handle = subscriptions.get(item);
 
-        HashMap<String,String> update = snapshots.get(item);
-        if (update == null) {
-            update = new HashMap<String, String>();
-            update.put("message", "-");
-            update.put("date", "-");
-            update.put("timestamp", "-");
-            update.put("IP", "-");
-            snapshots.put(item, update);
+    private class RoundTripItemManager implements ItemManager {
+        private final String itemName;
+        private volatile ItemListener listener;
+        private HashMap<String,String> snapshot;
+
+        RoundTripItemManager(String itemName) {
+            this.itemName = itemName;
         }
-        
-        final HashMap<String,String> fUpdate = (HashMap<String,String>) update.clone();
 
-        //If we have a listener create a new Runnable to be used as a task to pass the
-        //new update to the listener
-        Runnable updateTask = new Runnable() {
-            public void run() {
-                // call the update on the listener;
-                // in case the listener has just been detached,
-                // the listener should detect the case
-                listener.smartUpdate(handle, fUpdate, true);
+        @Override
+        public Mode getSupportedMode() {
+            return Mode.MERGE;
+        }
+
+        @Override
+        public CompletionStage<Void> subscribe(ItemListener listener) {
+
+            this.listener = listener;
+
+            // Add the new item to the list of subscribed items
+            subscriptions.put(itemName, this);
+            
+            //send the snapshot
+            if (snapshot == null) {
+                snapshot = new HashMap<String, String>();
+                snapshot.put("message", "-");
+                snapshot.put("date", "-");
+                snapshot.put("timestamp", "-");
+                snapshot.put("IP", "-");
             }
-        };
+            
+            final HashMap<String,String> fUpdate = (HashMap<String,String>) snapshot.clone();
 
-        //We add the task on the executor to pass to the listener the actual status
-        executor.execute(updateTask);
-    }
+            //If we have a listener create a new Runnable to be used as a task to pass the
+            //new update to the listener
+            Runnable updateTask = new Runnable() {
+                public void run() {
+                    // call the update on the listener;
+                    // in case the listener has just been detached,
+                    // the listener should detect the case
+                    listener.snapshot(fUpdate, null);
+                }
+            };
 
-    public void unsubscribe(String item) throws SubscriptionException,
-        FailureException {
+            //We add the task on the executor to pass to the listener the actual status
+            executor.execute(updateTask);
+            
+            logger.info(itemName + " subscribed");
 
-        assert(subscriptions.containsKey(item));
+            return CompletableFuture.completedFuture(null);
+        }
 
-        // Remove the handle from the list of subscribed items
-        subscriptions.remove(item);
+        @Override
+        public boolean isSnapshotAvailable() {
+            //This adapter does not handle the snapshot.
+            //If there is someone subscribed the snapshot is kept by the server
+            return true;
+        }
 
-        logger.info(item + " unsubscribed");
-    }
+        @Override
+        public CompletionStage<Void> unsubscribe() {
 
-    public boolean isSnapshotAvailable(String arg0)
-            throws SubscriptionException {
-        //This adapter does not handle the snapshot.
-        //If there is someone subscribed the snapshot is kept by the server
-        return true;
-    }
+            // Remove from the list of subscribed items
+            subscriptions.remove(itemName);
+            this.listener = null;
 
+            logger.info(itemName + " unsubscribed");
 
-    public void setListener(ItemEventListener listener) {
-        this.listener = listener;
+            return CompletableFuture.completedFuture(null);
+        }
+
+        void sendUpdate(String ip, String message) {
+            Date now = new Date();
+            String timestamp = new SimpleDateFormat("HH:mm:ss").format(now);
+            String date = new SimpleDateFormat("yyyy.MM.dd").format(now);
+
+            logger.debug(date + " - " + timestamp + "|New message: " + ip + "->" + itemName + "->" + message);
+
+            if (snapshot == null) {
+                //should never happen as the map is generated in the subscribe method
+                snapshot = new HashMap<String, String>();
+            }
+            snapshot.put("message", message);
+            snapshot.put("timestamp", timestamp);
+            snapshot.put("date", date);
+            snapshot.put("IP", ip);
+
+            final HashMap<String, String> fUpdate = (HashMap<String,String>) snapshot.clone();
+
+            final ItemListener itemListener = this.listener;
+
+            //If we have a listener create a new Runnable to be used as a task to pass the
+            //new update to the listener
+            Runnable updateTask = new Runnable() {
+                public void run() {
+                    // call the update on the listener;
+                    // in case the listener has just been detached,
+                    // the listener should detect the case
+                    itemListener.update(fUpdate);
+                }
+            };
+
+            //We add the task on the executor to pass to the listener the actual status
+            executor.execute(updateTask);
+        }
     }
     
     /**
@@ -181,7 +203,8 @@ public class RoundTripDataAdapter implements SmartDataProvider {
      */
     public boolean sendMessage(String IP, String channel, String message) {
         final String item = "roundtrip"+channel;
-        if (!subscriptions.containsKey(item)) {
+        RoundTripItemManager manager = subscriptions.get(item);
+        if (manager == null) {
             logger.warn("Received message for wrong or not-subscribed channel");
             return false;
         }
@@ -202,49 +225,15 @@ public class RoundTripDataAdapter implements SmartDataProvider {
             logger.warn("Message length excedes the length limits");
             return false;
         }
-        
-        Date now = new Date();
-        String timestamp = new SimpleDateFormat("HH:mm:ss").format(now);
-        String date = new SimpleDateFormat("yyyy.MM.dd").format(now);
 
-        logger.debug(date + " - " + timestamp + "|New message: " + IP + "->" + channel + "->" + message);
-
-        HashMap<String,String> update = snapshots.get(item);
-        if (update == null) {
-            //should never happen as the map is generated in the sendSnapshot method 
-            update = new HashMap<String, String>();
-            snapshots.put(item, update);            
-        }
-        update.put("message", message);
-        update.put("timestamp", timestamp);
-        update.put("date", date);
-        update.put("IP", IP);
-        
-
-        
-        final HashMap<String, String> fUpdate = (HashMap<String,String>) update.clone();
-
-        //If we have a listener create a new Runnable to be used as a task to pass the
-        //new update to the listener
-        Runnable updateTask = new Runnable() {
-            public void run() {
-                // call the update on the listener;
-                // in case the listener has just been detached,
-                // the listener should detect the case
-                listener.smartUpdate(subscriptions.get(item), fUpdate, false);
-            }
-        };
-
-        //We add the task on the executor to pass to the listener the actual status
-        executor.execute(updateTask);
+        manager.sendUpdate(IP, message);
 
         return true;
     }
 
-    public void subscribe(String arg0, boolean arg1)
-        throws SubscriptionException, FailureException {
-    //NEVER CALLED
-
+    @Override
+    public void shutdown() {
+        executor.shutdown();
     }
 
 }
